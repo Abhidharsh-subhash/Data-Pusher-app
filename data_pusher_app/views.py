@@ -6,6 +6,7 @@ import secrets
 import string
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -49,3 +50,42 @@ class accountView(GenericAPIView):
                 'message': 'something went wrong try again'
             }
             return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        id = request.data.get('accountid')
+        if id:
+            account = get_object_or_404(Account, id=id)
+            serializer = self.serializer_class(account)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            accounts = Account.objects.all()
+            serializer = self.serializer_class(accounts, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        id = request.data.get('accountid')
+        account = get_object_or_404(Account, id=id)
+        account.delete()
+
+        response = {
+            'status': 204,
+            'message': 'Account deleted successfully'
+        }
+        return Response(data=response, status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request):
+        id = request.data.get('id')
+        account = get_object_or_404(Account, id=id)
+        breakpoint()
+        fields = request.data.keys()
+        # for i in fields:
+        #     Account.objects.filter(id=id).update(i=request.data[i])
+        for field in fields:
+            if hasattr(account, field):
+                setattr(account, field, request.data.get(field))
+        account.save()
+        response = {
+            'status': 200,
+            'message': 'Account updated successfully'
+        }
+        return Response(data=response, status=status.HTTP_200_OK)
