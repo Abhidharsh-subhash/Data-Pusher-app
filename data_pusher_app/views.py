@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
-from .serializers import accountserializer
-from .models import Account
+from .serializers import accountserializer, DestinationSerializer
+from .models import Account, Destination
 import secrets
 import string
 from rest_framework.response import Response
@@ -89,3 +89,28 @@ class accountView(GenericAPIView):
             'message': 'Account updated successfully'
         }
         return Response(data=response, status=status.HTTP_200_OK)
+
+
+class destinationview(GenericAPIView):
+    serializer_class = DestinationSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'status': 201,
+                'message': 'Destination created successfully'
+            }
+            return Response(data=response, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        pass
+
+    def delete(self, request):
+        pass
+
+    def patch(self, request):
+        pass

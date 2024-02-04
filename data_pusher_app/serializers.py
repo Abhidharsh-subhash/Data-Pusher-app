@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account
+from .models import Account, Destination
 from django.core.validators import EmailValidator
 from rest_framework.validators import ValidationError
 
@@ -27,3 +27,9 @@ class accountserializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['email', 'account_id', 'account_name', 'website']
+
+
+class DestinationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Destination
+        fields = ['id', 'url', 'http_method', 'headers']
